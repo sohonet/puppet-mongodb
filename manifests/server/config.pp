@@ -9,6 +9,7 @@ class mongodb::server::config {
   $config_data      = $mongodb::server::config_data
   $dbpath           = $mongodb::server::dbpath
   $dbpath_fix       = $mongodb::server::dbpath_fix
+  $systemd_fix      = $mongodb::server::systemd_fix
   $pidfilepath      = $mongodb::server::pidfilepath
   $pidfilemode      = $mongodb::server::pidfilemode
   $manage_pidfile   = $mongodb::server::manage_pidfile
@@ -246,6 +247,19 @@ class mongodb::server::config {
         onlyif    => "find ${dbpath} -not -user ${user} -o -not -group ${group} -print -quit | grep -q '.*'",
         subscribe => File[$dbpath],
       }
+    }
+
+    if $systemd_fix {
+        file { '/lib/systemd/system/mongod.service':
+          ensure  => file,
+          content => template('mongodb/mongod.service.erb'),
+        }
+        exec { 'fix systemd service':
+          command     => 'systemctl daemon-reload',
+          refreshonly => true,
+          path        => ['/usr/bin', '/bin'],
+          subscribe   => File['/lib/systemd/system/mongod.service'],
+        }
     }
 
     if $pidfilepath {

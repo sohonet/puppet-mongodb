@@ -8,6 +8,7 @@ class mongodb::server (
   $config                = $mongodb::params::config,
   $dbpath                = $mongodb::params::dbpath,
   $dbpath_fix            = $mongodb::params::dbpath_fix,
+  $systemd_fix           = $mongodb::params::systemd_fix,
   $pidfilepath           = $mongodb::params::pidfilepath,
   $pidfilemode           = $mongodb::params::pidfilemode,
   $manage_pidfile        = $mongodb::params::manage_pidfile,
