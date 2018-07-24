@@ -14,7 +14,6 @@ class mongodb::params inherits mongodb::globals {
   $store_creds           = false
   $rcfile                = "${::root_home}/.mongorc.js"
   $dbpath_fix            = true
-  $systemd_fix           = false
 
   $mongos_service_manage = pick($mongodb::globals::mongos_service_manage, true)
   $mongos_service_enable = pick($mongodb::globals::mongos_service_enable, true)
@@ -210,9 +209,11 @@ class mongodb::params inherits mongodb::globals {
       case $::operatingsystemmajrelease {
         '8': {
           $service_provider = pick($service_provider, 'systemd')
+          $systemd_fix      = true
         }
         default: {
           $service_provider = pick($service_provider, 'debian')
+          $systemd_fix      = false
         }
       }
     }
@@ -222,10 +223,12 @@ class mongodb::params inherits mongodb::globals {
         $systemd_fix      = true
       } else {
         $service_provider = pick($service_provider, 'upstart')
+        $systemd_fix      = false
       }
     }
     default: {
       $service_provider = undef
+      $systemd_fix      = false
     }
   }
 }
